@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Search, Filter, Upload, X, FileText, ArrowLeft, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 
 const ContractDetails = () => {
   const { contractName } = useParams<{ contractName: string }>();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -86,6 +87,10 @@ const ContractDetails = () => {
     }
   };
 
+  const handleViewContract = (contractId: string) => {
+    navigate(`/contract/${encodeURIComponent(contractName || "")}/view/${contractId}`);
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
@@ -148,7 +153,7 @@ const ContractDetails = () => {
                 Upload
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl">
+            <DialogContent className="sm:max-w-4xl max-h-[80vh]">
               <DialogHeader>
                 <DialogTitle>Upload Contract Document</DialogTitle>
               </DialogHeader>
@@ -218,12 +223,13 @@ const ContractDetails = () => {
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
                 <TableHead>Action</TableHead>
+                <TableHead>View</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredContracts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     No contracts found for {decodedContractName}
                   </TableCell>
                 </TableRow>
@@ -246,10 +252,21 @@ const ContractDetails = () => {
                         variant="ghost" 
                         size="sm" 
                         className="gap-2"
-                        onClick={() => alert(`View contract ${contract.id}`)}
+                        onClick={() => alert(`Process contract ${contract.id}`)}
                       >
                         <Eye className="h-4 w-4" />
                         {contract.status === "In Progress" ? "Process" : "View"}
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="gap-2"
+                        onClick={() => handleViewContract(contract.id)}
+                      >
+                        <Eye className="h-4 w-4" />
+                        View
                       </Button>
                     </TableCell>
                   </TableRow>
