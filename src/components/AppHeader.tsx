@@ -13,7 +13,7 @@ export function AppHeader() {
       
       <div className="flex flex-1 items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold">Document Processing System</h1>
+          <h1 className="text-lg font-semibold">Contract Assist</h1>
         </div>
         
         <div className="flex items-center gap-2">

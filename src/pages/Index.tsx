@@ -8,9 +8,9 @@ const Index = () => {
     <div className="p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">Document Processing System</h1>
+          <h1 className="text-4xl font-bold tracking-tight">Contract Assist</h1>
           <p className="text-xl text-muted-foreground">
-            Upload, process, and manage your PDF documents with ease
+            Upload, process, and manage your contract documents with ease
           </p>
           <Link to="/dashboard">
             <Button size="lg" className="mt-4">
@@ -29,7 +29,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Easily upload your PDF documents with our intuitive drag-and-drop interface.
+                Easily upload your contract documents with our intuitive drag-and-drop interface.
               </p>
             </CardContent>
           </Card>
@@ -43,7 +43,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Select document types to ensure proper processing and organization.
+                Select document types to ensure proper contract processing and organization.
               </p>
             </CardContent>
           </Card>
@@ -57,7 +57,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Let our system automatically process your documents with advanced AI.
+                Let our system automatically process your contracts with advanced AI.
               </p>
             </CardContent>
           </Card>
