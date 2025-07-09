@@ -141,13 +141,13 @@ const ContractDetails = () => {
                 Upload
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle>Upload Contract Document</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="documentType">Document Type</Label>
+                  <Label htmlFor="documentType">Contract Type</Label>
                   <Select value={documentType} onValueChange={setDocumentType}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select document type" />
@@ -210,7 +210,6 @@ const ContractDetails = () => {
                 <TableHead>Status</TableHead>
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
-                <TableHead>Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -227,7 +226,6 @@ const ContractDetails = () => {
                   <TableCell>{getStatusBadge(contract.status)}</TableCell>
                   <TableCell>{contract.startDate}</TableCell>
                   <TableCell>{contract.endDate}</TableCell>
-                  <TableCell className="font-medium">{contract.value}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
