@@ -22,22 +22,22 @@ const Dashboard = () => {
   const stats = [
     {
       title: "Total Contracts",
-      value: "450",
+      value: "100",
       color: "text-foreground"
     },
     {
       title: "Not Started",
-      value: "293",
+      value: "65",
       color: "text-muted-foreground"
     },
     {
       title: "In Progress",
-      value: "7",
+      value: "20",
       color: "text-blue-600"
     },
     {
       title: "Completed",
-      value: "150",
+      value: "15",
       color: "text-green-600"
     }
   ];
