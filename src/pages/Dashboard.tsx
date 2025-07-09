@@ -114,7 +114,6 @@ const Dashboard = () => {
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Contract Assist</h1>
-        <p className="text-muted-foreground">thought urselft for bottom</p>
       </div>
 
       {/* Stats Cards */}
