@@ -75,27 +75,27 @@ const Dashboard = () => {
     switch (status) {
       case "Completed":
         return (
-          <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 whitespace-nowrap text-xs flex items-center">
+          <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">
             <CheckCircle className="w-3 h-3 mr-1" />
             Completed
           </Badge>
         );
       case "In Progress":
         return (
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200 whitespace-nowrap text-xs flex items-center">
+          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200 whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">
             <Clock className="w-3 h-3 mr-1" />
             In Progress
           </Badge>
         );
       case "Not Started":
         return (
-          <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-gray-200 whitespace-nowrap text-xs flex items-center">
+          <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-gray-200 whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">
             <XCircle className="w-3 h-3 mr-1" />
             Not Started
           </Badge>
         );
       default:
-        return <Badge variant="outline" className="whitespace-nowrap text-xs">{status}</Badge>;
+        return <Badge variant="outline" className="whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">{status}</Badge>;
     }
   };
 
