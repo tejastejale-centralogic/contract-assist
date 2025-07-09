@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { Search, Filter, Upload, X, FileText, ArrowLeft, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ContractApiService, type ProcessedContract } from "@/services/contractApi";
 
 const ContractDetails = () => {
   const { contractName } = useParams<{ contractName: string }>();
@@ -17,38 +16,50 @@ const ContractDetails = () => {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState("");
-  const [contracts, setContracts] = useState<ProcessedContract[]>([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  const handleViewContract = (contractId: string) => {
-    navigate(`/contract/${encodeURIComponent(contractName || "")}/view/${contractId}`);
-  };
 
   const decodedContractName = decodeURIComponent(contractName || "");
 
-  useEffect(() => {
-    const fetchContracts = async () => {
-      try {
-        setLoading(true);
-        const allContracts = await ContractApiService.fetchContracts();
-        const companyContracts = ContractApiService.getContractsByCompany(allContracts, decodedContractName);
-        setContracts(companyContracts);
-      } catch (error) {
-        console.error('Failed to fetch contracts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchContracts();
-  }, [decodedContractName]);
+  // Mock contract data
+  const mockContracts = [
+    {
+      id: "CT-001",
+      name: "Master Distribution Agreement",
+      type: "PUBLIC",
+      region: "North America",
+      status: "Completed",
+      startDate: "2024-01-01",
+      endDate: "2024-12-31"
+    },
+    {
+      id: "CT-002", 
+      name: "Service Level Agreement",
+      type: "PRIVATE",
+      region: "North America", 
+      status: "In Progress",
+      startDate: "2024-03-15",
+      endDate: "2025-03-15"
+    },
+    {
+      id: "CT-003",
+      name: "Non-Disclosure Agreement", 
+      type: "PRIVATE",
+      region: "North America",
+      status: "Not Started",
+      startDate: "2024-06-01",
+      endDate: "2024-12-01"
+    }
+  ];
 
   const documentTypes = [
     "MTF",
     "Legacy", 
     "PULA"
   ];
+
+  const filteredContracts = mockContracts.filter(contract =>
+    contract.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    contract.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -74,11 +85,6 @@ const ContractDetails = () => {
         return <Badge variant="outline" className="whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">{status}</Badge>;
     }
   };
-
-  const filteredContracts = contracts.filter(contract =>
-    contract.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contract.filename.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -117,8 +123,8 @@ const ContractDetails = () => {
         </div>
       </div>
 
-        <div className="space-y-4">
-        <p className="text-muted-foreground">Contract history and details ({contracts.length} total)</p>
+      <div className="space-y-4">
+        <p className="text-muted-foreground">Contract history and details ({filteredContracts.length} total)</p>
         
         <div className="flex gap-4">
           <div className="relative flex-1 max-w-sm">
@@ -215,13 +221,7 @@ const ContractDetails = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
-                    Loading contracts...
-                  </TableCell>
-                </TableRow>
-              ) : filteredContracts.length === 0 ? (
+              {filteredContracts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8">
                     No contracts found for {decodedContractName}
@@ -231,7 +231,7 @@ const ContractDetails = () => {
                 filteredContracts.map((contract, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{contract.id}</TableCell>
-                    <TableCell>{contract.filename}</TableCell>
+                    <TableCell>{contract.name}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="bg-black text-white">
                         {contract.type}
@@ -239,14 +239,14 @@ const ContractDetails = () => {
                     </TableCell>
                     <TableCell>{contract.region}</TableCell>
                     <TableCell>{getStatusBadge(contract.status)}</TableCell>
-                    <TableCell>{new Date(contract.lastModified).toLocaleDateString()}</TableCell>
-                    <TableCell>-</TableCell>
+                    <TableCell>{contract.startDate}</TableCell>
+                    <TableCell>{contract.endDate}</TableCell>
                     <TableCell>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         className="gap-2"
-                        onClick={() => handleViewContract(contract.id)}
+                        onClick={() => alert(`View contract ${contract.id}`)}
                       >
                         <Eye className="h-4 w-4" />
                         {contract.status === "In Progress" ? "Process" : "View"}
