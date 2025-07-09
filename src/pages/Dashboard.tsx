@@ -130,11 +130,11 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Company Research Queue */}
+      {/* Companies List */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Company Research Queue</h2>
-          <p className="text-muted-foreground">Select a company to view or start its subsidiary research workflow</p>
+          <h2 className="text-2xl font-bold tracking-tight">Companies List</h2>
+          <p className="text-muted-foreground">Select a company to view their details</p>
         </div>
 
         {/* Search and Filter */}
