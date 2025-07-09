@@ -72,9 +72,12 @@ const ContractView = () => {
             Back
           </Button>
         </Link>
+        <div className="flex justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Contract {contractId}</h1>
           <p className="text-muted-foreground">{decodedContractName} - Document View</p>
+        </div>
+          <Button>Approve</Button>
         </div>
       </div>
 
@@ -126,7 +129,7 @@ const ContractView = () => {
           </CardHeader>
           <CardContent className="h-full">
             <ScrollArea className="h-[500px] w-full">
-              <pre className="text-xs h-full bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto">
+              <pre className="text-xs bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto">
                 {JSON.stringify(contractJsonData, null, 2)}
               </pre>
             </ScrollArea>
