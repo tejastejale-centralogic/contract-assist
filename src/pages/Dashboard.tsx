@@ -128,7 +128,7 @@ const Dashboard = () => {
       {/* Companies List */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Companies List</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Contracts List</h2>
           <p className="text-muted-foreground">Select a company to view their details</p>
         </div>
 
