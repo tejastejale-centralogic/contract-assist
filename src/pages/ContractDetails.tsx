@@ -120,134 +120,121 @@ const ContractDetails = () => {
         </div>
       </div>
 
-      <div className="flex gap-6">
-        {/* Contracts Table */}
-        <div className="flex-1 space-y-4">
-          <p className="text-muted-foreground">Contract history and details</p>
-          
-          <div className="flex gap-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search contracts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button variant="outline" className="gap-2">
-              <Filter className="h-4 w-4" />
-              Filter
-            </Button>
+      <div className="space-y-4">
+        <p className="text-muted-foreground">Contract history and details</p>
+        
+        <div className="flex gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search contracts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
           </div>
+          <Button variant="outline" className="gap-2">
+            <Filter className="h-4 w-4" />
+            Filter
+          </Button>
+          
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Upload className="h-4 w-4" />
+                Upload
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Upload Contract Document</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="documentType">Document Type</Label>
+                  <Select value={documentType} onValueChange={setDocumentType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select document type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {documentTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="file">Upload PDF File</Label>
+                  <Input
+                    id="file"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileUpload}
+                    className="cursor-pointer"
+                  />
+                  {selectedFile && (
+                    <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                      <FileText className="h-4 w-4" />
+                      {selectedFile.name}
+                    </div>
+                  )}
+                </div>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Contract ID</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Region</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Start Date</TableHead>
-                  <TableHead>End Date</TableHead>
-                  <TableHead>Value</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredContracts.map((contract, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{contract.contractId}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-black text-white">
-                        {contract.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{contract.region}</TableCell>
-                    <TableCell>{getStatusBadge(contract.status)}</TableCell>
-                    <TableCell>{contract.startDate}</TableCell>
-                    <TableCell>{contract.endDate}</TableCell>
-                    <TableCell className="font-medium">{contract.value}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </div>
-
-        {/* Upload Section */}
-        <div className="w-80">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Documents</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="w-full gap-2">
-                    <Upload className="h-4 w-4" />
-                    Upload PDF Document
+                <div className="flex gap-2">
+                  <Button onClick={handleUploadSubmit} className="flex-1">
+                    Upload
                   </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Upload Contract Document</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="documentType">Document Type</Label>
-                      <Select value={documentType} onValueChange={setDocumentType}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select document type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {documentTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="file">Upload PDF File</Label>
-                      <Input
-                        id="file"
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleFileUpload}
-                        className="cursor-pointer"
-                      />
-                      {selectedFile && (
-                        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                          <FileText className="h-4 w-4" />
-                          {selectedFile.name}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button onClick={handleUploadSubmit} className="flex-1">
-                        Upload
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => {
-                          setUploadDialogOpen(false);
-                          setSelectedFile(null);
-                          setDocumentType("");
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setUploadDialogOpen(false);
+                      setSelectedFile(null);
+                      setDocumentType("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
+
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Contract ID</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Region</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Start Date</TableHead>
+                <TableHead>End Date</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredContracts.map((contract, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">{contract.contractId}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="bg-black text-white">
+                      {contract.type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{contract.region}</TableCell>
+                  <TableCell>{getStatusBadge(contract.status)}</TableCell>
+                  <TableCell>{contract.startDate}</TableCell>
+                  <TableCell>{contract.endDate}</TableCell>
+                  <TableCell className="font-medium">{contract.value}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
       </div>
     </div>
   );
