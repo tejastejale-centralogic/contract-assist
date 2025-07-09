@@ -242,7 +242,7 @@ const ContractDetails = () => {
                       onClick={() => handleViewContract(contract.contractId)}
                     >
                       <Eye className="h-4 w-4" />
-                      {contract.docStatus === "processed" ? "View" : "Process"}
+                      {contract.status === "In Progress" ? "Process" : "View"}
                     </Button>
                   </TableCell>
                 </TableRow>

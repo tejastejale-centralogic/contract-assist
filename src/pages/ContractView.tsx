@@ -99,9 +99,16 @@ const ContractView = () => {
             Back
           </Button>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Contract {contractId}</h1>
-          <p className="text-muted-foreground">{decodedContractName} - Document View</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Contract {contractId}</h1>
+            <p className="text-muted-foreground">{decodedContractName} - Document View</p>
+          </div>
+          {contractJsonData.contractDetails.docStatus === "not processed" && (
+            <Button onClick={handleApprove}>
+              Approve
+            </Button>
+          )}
         </div>
       </div>
 
@@ -151,20 +158,15 @@ const ContractView = () => {
               Contract JSON Data
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-full flex flex-col">
-            <ScrollArea className="flex-1 mb-4">
+          <CardContent className="h-full">
+            <ScrollArea className="h-[500px] w-full">
               <Textarea
                 value={jsonText}
                 onChange={(e) => setJsonText(e.target.value)}
-                className="min-h-[400px] font-mono text-xs bg-gray-900 text-gray-100 border-gray-700"
+                className="min-h-[450px] font-mono text-xs bg-gray-900 text-gray-100 border-gray-700"
                 placeholder="Edit contract JSON data..."
               />
             </ScrollArea>
-            {contractJsonData.contractDetails.docStatus === "not processed" && (
-              <Button onClick={handleApprove} className="w-full">
-                Approve
-              </Button>
-            )}
           </CardContent>
         </Card>
       </div>
