@@ -134,14 +134,7 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Companies List */}
       <div className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Contracts List</h2>
-          <p className="text-muted-foreground">Select a contract to view their details</p>
-        </div>
-
-        {/* Search and Filter */}
         <div className="flex gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
