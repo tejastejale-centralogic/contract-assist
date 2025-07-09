@@ -113,8 +113,8 @@ const Dashboard = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Subsidiary Research Dashboard</h1>
-        <p className="text-muted-foreground">Manage and track research progress across 450 companies</p>
+        <h1 className="text-3xl font-bold tracking-tight">Contract Assist</h1>
+        <p className="text-muted-foreground">thought urselft for bottom</p>
       </div>
 
       {/* Stats Cards */}
