@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, FileText, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 
 const ContractView = () => {
   const { contractName, contractId } = useParams<{ contractName: string; contractId: string }>();
@@ -13,7 +15,7 @@ const ContractView = () => {
   const pdfPlaceholder = "PDF Document content would be displayed here. This is a placeholder for the actual PDF viewer component.";
 
   // Sample JSON data for the contract
-  const contractJsonData = {
+  const initialContractJsonData = {
     contractId: contractId,
     companyName: decodedContractName,
     contractDetails: {
@@ -61,6 +63,8 @@ const ContractView = () => {
       ]
     }
   };
+
+  const [contractJsonData, setContractJsonData] = useState(JSON.stringify(initialContractJsonData, null, 2));
 
   return (
     <div className="p-6 space-y-6">
@@ -129,9 +133,12 @@ const ContractView = () => {
           </CardHeader>
           <CardContent className="h-full">
             <ScrollArea className="h-[500px] w-full">
-              <pre className="text-xs bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto">
-                {JSON.stringify(contractJsonData, null, 2)}
-              </pre>
+              <Textarea
+                value={contractJsonData}
+                onChange={(e) => setContractJsonData(e.target.value)}
+                className="h-[480px] w-full text-xs font-mono resize-none border-0 focus-visible:ring-0"
+                placeholder="Edit JSON data..."
+              />
             </ScrollArea>
           </CardContent>
         </Card>
