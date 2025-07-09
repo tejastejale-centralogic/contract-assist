@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Filter, Eye, MoreHorizontal, CheckCircle, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,11 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const navigate = useNavigate();
+
+  const handleViewContract = (contractName: string) => {
+    navigate(`/contract/${encodeURIComponent(contractName)}`);
+  };
 
   const stats = [
     {
@@ -179,7 +185,12 @@ const Dashboard = () => {
                     {getStatusBadge(company.status)}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" className="gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="gap-2"
+                      onClick={() => handleViewContract(company.name)}
+                    >
                       <Eye className="h-4 w-4" />
                       View
                     </Button>
