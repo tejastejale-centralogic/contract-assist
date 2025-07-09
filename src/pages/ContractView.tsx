@@ -107,8 +107,8 @@ const ContractView = () => {
         </div>
       </div>
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Two-column layout - always side by side */}
+      <div className="grid grid-cols-2 gap-6">
         {/* PDF Viewer Card */}
         <Card className="h-[700px]">
           <CardHeader>
