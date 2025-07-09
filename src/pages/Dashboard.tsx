@@ -35,43 +35,38 @@ const Dashboard = () => {
 
   const companies = [
     {
+      contractId: "CT-001",
       name: "Microsoft Corporation",
-      domain: "microsoft.com",
-      region: "North America",
       type: "PUBLIC",
-      assignee: "John Smith",
+      region: "North America",
       status: "Completed"
     },
     {
+      contractId: "CT-002", 
       name: "Amazon.com Inc.",
-      domain: "amazon.com",
-      region: "North America",
       type: "PUBLIC",
-      assignee: "Sarah Johnson",
+      region: "North America",
       status: "In Progress"
     },
     {
+      contractId: "CT-003",
       name: "Apple Inc.",
-      domain: "apple.com",
+      type: "PUBLIC", 
       region: "North America",
-      type: "PUBLIC",
-      assignee: "Mike Davis",
       status: "In Progress"
     },
     {
+      contractId: "CT-004",
       name: "Alphabet Inc.",
-      domain: "abc.xyz",
-      region: "North America",
       type: "PUBLIC",
-      assignee: "Emily Chen",
+      region: "North America", 
       status: "Not Started"
     },
     {
+      contractId: "CT-005",
       name: "Meta Platforms Inc.",
-      domain: "meta.com",
-      region: "North America",
       type: "PUBLIC",
-      assignee: "David Wilson",
+      region: "North America",
       status: "Completed"
     }
   ];
@@ -106,7 +101,7 @@ const Dashboard = () => {
 
   const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.domain.toLowerCase().includes(searchQuery.toLowerCase())
+    company.contractId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -159,49 +154,33 @@ const Dashboard = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Company Name</TableHead>
-                <TableHead>Domain</TableHead>
-                <TableHead>Region</TableHead>
+                <TableHead>Contract ID</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Assignee</TableHead>
+                <TableHead>Region</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCompanies.map((company, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-medium">{company.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{company.domain}</TableCell>
-                  <TableCell>{company.region}</TableCell>
+                  <TableCell className="font-medium">{company.contractId}</TableCell>
+                  <TableCell>{company.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-black text-white">
                       {company.type}
                     </Badge>
                   </TableCell>
-                  <TableCell>{company.assignee}</TableCell>
+                  <TableCell>{company.region}</TableCell>
                   <TableCell>
                     {getStatusBadge(company.status)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" className="gap-2">
-                        <Eye className="h-4 w-4" />
-                        View
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Assign</DropdownMenuItem>
-                          <DropdownMenuItem>Archive</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <Eye className="h-4 w-4" />
+                      View
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
