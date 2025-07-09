@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Search, Filter, Upload, X, FileText, ArrowLeft } from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Search, Filter, Upload, X, FileText, ArrowLeft, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,11 @@ const ContractDetails = () => {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState("");
+  const navigate = useNavigate();
+
+  const handleViewContract = (contractId: string) => {
+    navigate(`/contract/${encodeURIComponent(contractName || "")}/view/${contractId}`);
+  };
 
   const decodedContractName = decodeURIComponent(contractName || "");
 
@@ -141,7 +146,7 @@ const ContractDetails = () => {
                 Upload
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Upload Contract Document</DialogTitle>
               </DialogHeader>
@@ -210,6 +215,7 @@ const ContractDetails = () => {
                 <TableHead>Status</TableHead>
                 <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -226,6 +232,17 @@ const ContractDetails = () => {
                   <TableCell>{getStatusBadge(contract.status)}</TableCell>
                   <TableCell>{contract.startDate}</TableCell>
                   <TableCell>{contract.endDate}</TableCell>
+                  <TableCell>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="gap-2"
+                      onClick={() => handleViewContract(contract.contractId)}
+                    >
+                      <Eye className="h-4 w-4" />
+                      View
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
