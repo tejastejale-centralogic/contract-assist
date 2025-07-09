@@ -44,13 +44,9 @@ const ContractDetails = () => {
   ];
 
   const documentTypes = [
-    "Contract Agreement",
-    "Amendment",
-    "Invoice", 
-    "Payment Receipt",
-    "Legal Document",
-    "Compliance Certificate",
-    "Other"
+    "MTF",
+    "Legacy", 
+    "PULA"
   ];
 
   const getStatusBadge = (status: string) => {
