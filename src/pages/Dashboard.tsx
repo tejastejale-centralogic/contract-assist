@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   const stats = [
     {
-      title: "Total Companies",
+      title: "Total Contracts",
       value: "450",
       color: "text-foreground"
     },
