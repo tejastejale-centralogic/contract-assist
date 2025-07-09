@@ -1,70 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, FileText, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { ContractApiService, type ProcessedContract } from "@/services/contractApi";
 
 const ContractView = () => {
   const { contractName, contractId } = useParams<{ contractName: string; contractId: string }>();
+  const [contract, setContract] = useState<ProcessedContract | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [contractJsonData, setContractJsonData] = useState("");
   
   const decodedContractName = decodeURIComponent(contractName || "");
 
-  // Sample PDF content placeholder (in real app, this would be the actual PDF viewer)
-  const pdfPlaceholder = "PDF Document content would be displayed here. This is a placeholder for the actual PDF viewer component.";
+  useEffect(() => {
+    const fetchContract = async () => {
+      try {
+        setLoading(true);
+        const allContracts = await ContractApiService.fetchContracts();
+        const foundContract = ContractApiService.getContractById(allContracts, decodedContractName, contractId || "");
+        
+        if (foundContract) {
+          setContract(foundContract);
+          
+          // Create JSON data from the contract
+          const jsonData = {
+            contractId: foundContract.id,
+            companyName: foundContract.companyName,
+            filename: foundContract.filename,
+            url: foundContract.url,
+            contractDetails: {
+              type: foundContract.type,
+              region: foundContract.region,
+              status: foundContract.status,
+              lastModified: foundContract.lastModified,
+              fileInfo: {
+                size: "Unknown",
+                pages: "Unknown",
+                format: "PDF"
+              }
+            }
+          };
+          setContractJsonData(JSON.stringify(jsonData, null, 2));
+        }
+      } catch (error) {
+        console.error('Failed to fetch contract:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Sample JSON data for the contract
-  const initialContractJsonData = {
-    contractId: contractId,
-    companyName: decodedContractName,
-    contractDetails: {
-      type: "PUBLIC",
-      region: "North America",
-      status: "Completed",
-      startDate: "2024-01-15",
-      endDate: "2024-12-31",
-      value: "$150,000",
-      signatories: [
-        {
-          name: "John Smith",
-          role: "Contract Manager",
-          signedDate: "2024-01-15"
-        },
-        {
-          name: "Jane Doe",
-          role: "Legal Representative",
-          signedDate: "2024-01-15"
-        }
-      ],
-      terms: {
-        paymentSchedule: "Monthly",
-        deliverables: [
-          "Software License",
-          "Technical Support",
-          "Training Services"
-        ],
-        penalties: {
-          latePayment: "2% per month",
-          earlyTermination: "$10,000"
-        }
-      },
-      compliance: {
-        regulatoryFramework: "SOX",
-        auditRequired: true,
-        reportingFrequency: "Quarterly"
-      },
-      amendments: [
-        {
-          date: "2024-06-15",
-          type: "Scope Extension",
-          description: "Added additional training modules"
-        }
-      ]
+    if (contractId) {
+      fetchContract();
     }
-  };
-
-  const [contractJsonData, setContractJsonData] = useState(JSON.stringify(initialContractJsonData, null, 2));
+  }, [decodedContractName, contractId]);
 
   return (
     <div className="p-6 space-y-6">
@@ -97,28 +88,43 @@ const ContractView = () => {
           </CardHeader>
           <CardContent className="h-full">
             <ScrollArea className="h-[500px] w-full border rounded-md p-4">
-              <div className="space-y-4">
-                <div className="bg-gray-100 p-4 rounded text-center text-muted-foreground">
-                  {pdfPlaceholder}
+              {loading ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-muted-foreground">Loading contract...</p>
                 </div>
-                <div className="space-y-2 text-sm">
-                  <p><strong>Document Title:</strong> Service Agreement - {decodedContractName}</p>
-                  <p><strong>Contract ID:</strong> {contractId}</p>
-                  <p><strong>Document Type:</strong> PDF</p>
-                  <p><strong>File Size:</strong> 2.4 MB</p>
-                  <p><strong>Pages:</strong> 15</p>
-                  <p><strong>Last Modified:</strong> 2024-01-15</p>
+              ) : contract ? (
+                <div className="space-y-4">
+                  <div className="bg-gray-100 p-4 rounded">
+                    <iframe
+                      src={contract.url}
+                      className="w-full h-64 border-0"
+                      title="Contract PDF"
+                    />
+                    <div className="mt-2 text-center">
+                      <a 
+                        href={contract.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline text-sm"
+                      >
+                        Open PDF in new tab
+                      </a>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <p><strong>Document Title:</strong> {contract.filename}</p>
+                    <p><strong>Contract ID:</strong> {contract.id}</p>
+                    <p><strong>Document Type:</strong> PDF</p>
+                    <p><strong>Status:</strong> {contract.status}</p>
+                    <p><strong>Company:</strong> {contract.companyName}</p>
+                    <p><strong>Last Modified:</strong> {new Date(contract.lastModified).toLocaleDateString()}</p>
+                  </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded">
-                  <h4 className="font-semibold mb-2">Document Preview</h4>
-                  <p className="text-sm text-gray-600">
-                    This service agreement ("Agreement") is entered into on January 15, 2024, 
-                    between {decodedContractName} ("Client") and our organization ("Service Provider").
-                    The terms and conditions outlined herein govern the provision of software 
-                    licensing and technical support services...
-                  </p>
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-muted-foreground">Contract not found</p>
                 </div>
-              </div>
+              )}
             </ScrollArea>
           </CardContent>
         </Card>
