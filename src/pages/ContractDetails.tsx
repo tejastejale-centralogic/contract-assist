@@ -107,11 +107,11 @@ const ContractDetails = () => {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="space-y-4">
         <Link to="/">
           <Button variant="outline" size="sm" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
+            Back
           </Button>
         </Link>
         <div>
@@ -208,6 +208,7 @@ const ContractDetails = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Contract ID</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Region</TableHead>
                 <TableHead>Status</TableHead>
@@ -220,6 +221,7 @@ const ContractDetails = () => {
               {filteredContracts.map((contract, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium">{contract.contractId}</TableCell>
+                  <TableCell>{contract.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-black text-white">
                       {contract.type}
