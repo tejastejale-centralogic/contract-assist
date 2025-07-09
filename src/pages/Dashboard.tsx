@@ -151,6 +151,8 @@ const Dashboard = () => {
           </Button>
         </div>
 
+        <p className="text-muted-foreground">Select a contract to view their details</p>
+
         {/* Data Table */}
         <Card>
           <Table>
