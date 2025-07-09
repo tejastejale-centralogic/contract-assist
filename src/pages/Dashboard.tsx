@@ -100,8 +100,7 @@ const Dashboard = () => {
   };
 
   const filteredCompanies = companies.filter(company =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.contractId.toLowerCase().includes(searchQuery.toLowerCase())
+    company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Pagination calculations
@@ -164,7 +163,6 @@ const Dashboard = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Contract ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Region</TableHead>
@@ -175,8 +173,7 @@ const Dashboard = () => {
             <TableBody>
               {currentCompanies.map((company, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-medium">{company.contractId}</TableCell>
-                  <TableCell>{company.name}</TableCell>
+                  <TableCell className="font-medium">{company.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-black text-white">
                       {company.type}
