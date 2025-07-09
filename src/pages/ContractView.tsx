@@ -3,9 +3,13 @@ import { ArrowLeft, FileText, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const ContractView = () => {
   const { contractName, contractId } = useParams<{ contractName: string; contractId: string }>();
+  const { toast } = useToast();
   
   const decodedContractName = decodeURIComponent(contractName || "");
 
@@ -13,13 +17,14 @@ const ContractView = () => {
   const pdfPlaceholder = "PDF Document content would be displayed here. This is a placeholder for the actual PDF viewer component.";
 
   // Sample JSON data for the contract
-  const contractJsonData = {
+  const initialJsonData = {
     contractId: contractId,
     companyName: decodedContractName,
     contractDetails: {
       type: "PUBLIC",
       region: "North America",
       status: "Completed",
+      docStatus: "not processed",
       startDate: "2024-01-15",
       endDate: "2024-12-31",
       value: "$150,000",
@@ -59,6 +64,28 @@ const ContractView = () => {
           description: "Added additional training modules"
         }
       ]
+    }
+  };
+
+  const [contractJsonData, setContractJsonData] = useState(initialJsonData);
+  const [jsonText, setJsonText] = useState(JSON.stringify(initialJsonData, null, 2));
+
+  const handleApprove = () => {
+    try {
+      const updatedData = JSON.parse(jsonText);
+      updatedData.contractDetails.docStatus = "processed";
+      setContractJsonData(updatedData);
+      setJsonText(JSON.stringify(updatedData, null, 2));
+      toast({
+        title: "Contract Approved",
+        description: "Contract status has been changed to processed.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Invalid JSON format. Please check your data.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -124,12 +151,20 @@ const ContractView = () => {
               Contract JSON Data
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-full">
-            <ScrollArea className="h-[500px] w-full">
-              <pre className="text-xs bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto">
-                {JSON.stringify(contractJsonData, null, 2)}
-              </pre>
+          <CardContent className="h-full flex flex-col">
+            <ScrollArea className="flex-1 mb-4">
+              <Textarea
+                value={jsonText}
+                onChange={(e) => setJsonText(e.target.value)}
+                className="min-h-[400px] font-mono text-xs bg-gray-900 text-gray-100 border-gray-700"
+                placeholder="Edit contract JSON data..."
+              />
             </ScrollArea>
+            {contractJsonData.contractDetails.docStatus === "not processed" && (
+              <Button onClick={handleApprove} className="w-full">
+                Approve
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

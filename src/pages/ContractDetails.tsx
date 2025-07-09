@@ -34,7 +34,8 @@ const ContractDetails = () => {
       status: "Completed",
       startDate: "2024-01-15",
       endDate: "2024-12-31",
-      value: "$150,000"
+      value: "$150,000",
+      docStatus: "not processed"
     },
     {
       contractId: "CT-002",
@@ -44,7 +45,8 @@ const ContractDetails = () => {
       status: "In Progress",
       startDate: "2024-03-01",
       endDate: "2025-02-28",
-      value: "$200,000"
+      value: "$200,000",
+      docStatus: "processed"
     }
   ];
 
@@ -240,7 +242,7 @@ const ContractDetails = () => {
                       onClick={() => handleViewContract(contract.contractId)}
                     >
                       <Eye className="h-4 w-4" />
-                      View
+                      {contract.docStatus === "processed" ? "View" : "Process"}
                     </Button>
                   </TableCell>
                 </TableRow>
