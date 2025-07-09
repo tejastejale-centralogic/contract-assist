@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Home", url: "/home", icon: Home },
   { title: "Documents", url: "/documents", icon: FileText },
   { title: "Users", url: "/users", icon: Users },
   { title: "Settings", url: "/settings", icon: Settings },
