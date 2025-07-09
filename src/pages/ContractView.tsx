@@ -3,13 +3,9 @@ import { ArrowLeft, FileText, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 
 const ContractView = () => {
   const { contractName, contractId } = useParams<{ contractName: string; contractId: string }>();
-  const { toast } = useToast();
   
   const decodedContractName = decodeURIComponent(contractName || "");
 
@@ -17,14 +13,13 @@ const ContractView = () => {
   const pdfPlaceholder = "PDF Document content would be displayed here. This is a placeholder for the actual PDF viewer component.";
 
   // Sample JSON data for the contract
-  const initialJsonData = {
+  const contractJsonData = {
     contractId: contractId,
     companyName: decodedContractName,
     contractDetails: {
       type: "PUBLIC",
       region: "North America",
       status: "Completed",
-      docStatus: "not processed",
       startDate: "2024-01-15",
       endDate: "2024-12-31",
       value: "$150,000",
@@ -67,28 +62,6 @@ const ContractView = () => {
     }
   };
 
-  const [contractJsonData, setContractJsonData] = useState(initialJsonData);
-  const [jsonText, setJsonText] = useState(JSON.stringify(initialJsonData, null, 2));
-
-  const handleApprove = () => {
-    try {
-      const updatedData = JSON.parse(jsonText);
-      updatedData.contractDetails.docStatus = "processed";
-      setContractJsonData(updatedData);
-      setJsonText(JSON.stringify(updatedData, null, 2));
-      toast({
-        title: "Contract Approved",
-        description: "Contract status has been changed to processed.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Invalid JSON format. Please check your data.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -99,16 +72,9 @@ const ContractView = () => {
             Back
           </Button>
         </Link>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Contract {contractId}</h1>
-            <p className="text-muted-foreground">{decodedContractName} - Document View</p>
-          </div>
-          {contractJsonData.contractDetails.docStatus === "not processed" && (
-            <Button onClick={handleApprove}>
-              Approve
-            </Button>
-          )}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Contract {contractId}</h1>
+          <p className="text-muted-foreground">{decodedContractName} - Document View</p>
         </div>
       </div>
 
@@ -160,12 +126,9 @@ const ContractView = () => {
           </CardHeader>
           <CardContent className="h-full">
             <ScrollArea className="h-[500px] w-full">
-              <Textarea
-                value={jsonText}
-                onChange={(e) => setJsonText(e.target.value)}
-                className="min-h-[450px] font-mono text-xs bg-gray-900 text-gray-100 border-gray-700"
-                placeholder="Edit contract JSON data..."
-              />
+              <pre className="text-xs h-full bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto">
+                {JSON.stringify(contractJsonData, null, 2)}
+              </pre>
             </ScrollArea>
           </CardContent>
         </Card>
