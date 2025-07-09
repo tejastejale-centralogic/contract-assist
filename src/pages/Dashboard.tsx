@@ -135,11 +135,13 @@ const Dashboard = () => {
       </div>
 
       <div className="space-y-4">
+        <p className="text-muted-foreground">Select a contract to view their details</p>
+        
         <div className="flex gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search companies..."
+              placeholder="Search contracts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -150,8 +152,6 @@ const Dashboard = () => {
             Filter Status
           </Button>
         </div>
-
-        <p className="text-muted-foreground">Select a contract to view their details</p>
 
         {/* Data Table */}
         <Card>
