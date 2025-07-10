@@ -91,35 +91,13 @@ const ContractView = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-full">
-            <ScrollArea className="h-[600px] w-full border rounded-md p-4">
-              <div className="space-y-4">
-                <div className="bg-gray-100 p-4 rounded">
-                  <iframe
-                    src={contract.pdfUrl}
-                    className="w-full h-96 border-0"
-                    title="Contract PDF"
-                  />
-                  <div className="mt-2 text-center">
-                    <a 
-                      href={contract.pdfUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline text-sm"
-                    >
-                      Open PDF in new tab
-                    </a>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <p><strong>Contract ID:</strong> {contract.id}</p>
-                  <p><strong>Contract Name:</strong> {contract.name}</p>
-                  <p><strong>Company:</strong> {decodedContractName}</p>
-                  <p><strong>Type:</strong> {contract.type}</p>
-                  <p><strong>Region:</strong> {contract.region}</p>
-                  <p><strong>Status:</strong> {contract.status}</p>
-                  <p><strong>Start Date:</strong> {contract.startDate}</p>
-                  <p><strong>End Date:</strong> {contract.endDate}</p>
-                </div>
+            <ScrollArea className="h-[600px] w-full border rounded-md">
+              <div className="w-full h-full">
+                <iframe
+                  src={contract.pdfUrl}
+                  className="w-full h-[580px] border-0"
+                  title="Contract PDF"
+                />
               </div>
             </ScrollArea>
           </CardContent>
