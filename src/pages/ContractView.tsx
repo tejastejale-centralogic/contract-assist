@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, FileText, Code, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,84 +8,57 @@ import { Textarea } from "@/components/ui/textarea";
 
 const ContractView = () => {
   const { contractName, contractId } = useParams<{ contractName: string; contractId: string }>();
+  const [searchParams] = useSearchParams();
   const [contractJsonData, setContractJsonData] = useState("");
   
   const decodedContractName = decodeURIComponent(contractName || "");
+  const decodedContractId = decodeURIComponent(contractId || "");
+  const pdfUrl = searchParams.get('url') || '';
 
-  // Mock contract data based on ID
-  const getContractData = (id: string) => {
-    const contracts = {
-      "CT-001": {
-        id: "CT-001",
-        name: "Master Distribution Agreement",
-        type: "PUBLIC",
-        region: "North America",
-        status: "Completed",
-        startDate: "2024-01-01",
-        endDate: "2024-12-31",
-        pdfUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-      },
-      "CT-002": {
-        id: "CT-002",
-        name: "Service Level Agreement",
-        type: "PRIVATE",
-        region: "North America",
-        status: "In Progress",
-        startDate: "2024-03-15",
-        endDate: "2025-03-15",
-        pdfUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-      },
-      "CT-003": {
-        id: "CT-003",
-        name: "Non-Disclosure Agreement",
-        type: "PRIVATE",
-        region: "North America",
-        status: "Not Started",
-        startDate: "2024-06-01",
-        endDate: "2024-12-01",
-        pdfUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-      }
-    };
-
-    return contracts[id as keyof typeof contracts] || null;
+  // Create contract data from URL parameters
+  const contract = {
+    id: decodedContractId,
+    name: decodedContractId,
+    type: "PDF Document",
+    region: "Unknown",
+    status: "Available",
+    startDate: "N/A",
+    endDate: "N/A",
+    pdfUrl: pdfUrl
   };
-
-  const contract = getContractData(contractId || "");
 
   // Initialize JSON data when component mounts
   useEffect(() => {
-    if (contract) {
-      const jsonData = {
-        contractId: contract.id,
-        contractName: contract.name,
-        companyName: decodedContractName,
-        contractDetails: {
-          type: contract.type,
-          region: contract.region,
-          status: contract.status,
-          startDate: contract.startDate,
-          endDate: contract.endDate,
-          pdfUrl: contract.pdfUrl,
-          metadata: {
-            createdDate: new Date().toISOString(),
-            lastModified: new Date().toISOString(),
-            version: "1.0"
-          }
+    const jsonData = {
+      contractId: contract.id,
+      contractName: contract.name,
+      companyName: decodedContractName,
+      contractDetails: {
+        type: contract.type,
+        region: contract.region,
+        status: contract.status,
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+        pdfUrl: contract.pdfUrl,
+        metadata: {
+          createdDate: new Date().toISOString(),
+          lastModified: new Date().toISOString(),
+          version: "1.0"
         }
-      };
-      setContractJsonData(JSON.stringify(jsonData, null, 2));
-    }
+      }
+    };
+    setContractJsonData(JSON.stringify(jsonData, null, 2));
   }, [contract, decodedContractName]);
 
   const handleApprove = () => {
-    alert(`Contract ${contractId} approved successfully!`);
+    alert(`Contract ${decodedContractId} approved successfully!`);
   };
 
-  if (!contract) {
+  if (!pdfUrl) {
     return (
       <div className="p-6 space-y-6">
         <div className="text-center py-8">
-          <p className="text-muted-foreground">Contract not found</p>
+          <p className="text-muted-foreground">Contract URL not found</p>
         </div>
       </div>
     );
@@ -102,8 +75,8 @@ const ContractView = () => {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Contract {contractId}</h1>
-          <p className="text-muted-foreground">{decodedContractName} - {contract.name}</p>
+          <h1 className="text-3xl font-bold tracking-tight">{decodedContractId}</h1>
+          <p className="text-muted-foreground">{decodedContractName}</p>
         </div>
       </div>
 

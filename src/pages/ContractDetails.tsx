@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Search, Filter, Upload, X, FileText, ArrowLeft, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,47 +9,47 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { contractApi, ContractFile } from "@/services/contractApi";
+import { useToast } from "@/hooks/use-toast";
 
 const ContractDetails = () => {
   const { contractName } = useParams<{ contractName: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState("");
+  const [contracts, setContracts] = useState<ContractFile[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const decodedContractName = decodeURIComponent(contractName || "");
+  const uri = searchParams.get('uri') || '';
 
-  // Mock contract data
-  const mockContracts = [
-    {
-      id: "CT-001",
-      name: "Master Distribution Agreement",
-      type: "PUBLIC",
-      region: "North America",
-      status: "Completed",
-      startDate: "2024-01-01",
-      endDate: "2024-12-31"
-    },
-    {
-      id: "CT-002", 
-      name: "Service Level Agreement",
-      type: "PRIVATE",
-      region: "North America", 
-      status: "In Progress",
-      startDate: "2024-03-15",
-      endDate: "2025-03-15"
-    },
-    {
-      id: "CT-003",
-      name: "Non-Disclosure Agreement", 
-      type: "PRIVATE",
-      region: "North America",
-      status: "Not Started",
-      startDate: "2024-06-01",
-      endDate: "2024-12-01"
-    }
-  ];
+  useEffect(() => {
+    const fetchContracts = async () => {
+      if (!uri) return;
+      
+      try {
+        setLoading(true);
+        const response = await contractApi.getContractFiles(uri);
+        if (response.success) {
+          setContracts(response.contracts);
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch contract files",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContracts();
+  }, [uri, toast]);
 
   const documentTypes = [
     "MTF",
@@ -57,38 +57,13 @@ const ContractDetails = () => {
     "PULA"
   ];
 
-  const filteredContracts = mockContracts.filter(contract =>
-    contract.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contract.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredContracts = contracts.filter(contract =>
+    contract.filename.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    contract.key.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "Completed":
-        return (
-          <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">
-            Completed
-          </Badge>
-        );
-      case "In Progress":
-        return (
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200 whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">
-            In Progress
-          </Badge>
-        );
-      case "Not Started":
-        return (
-          <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-gray-200 whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">
-            Not Started
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline" className="whitespace-nowrap text-xs px-2 py-1 h-auto w-fit">{status}</Badge>;
-    }
-  };
-
-  const handleViewContract = (contractId: string) => {
-    navigate(`/contract/${encodeURIComponent(contractName || "")}/view/${contractId}`);
+  const handleViewContract = (contract: ContractFile) => {
+    navigate(`/contract/${encodeURIComponent(contractName || "")}/view/${encodeURIComponent(contract.filename)}?url=${encodeURIComponent(contract.url)}`);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,7 +104,7 @@ const ContractDetails = () => {
       </div>
 
       <div className="space-y-4">
-        <p className="text-muted-foreground">Contract history and details ({filteredContracts.length} total)</p>
+        <p className="text-muted-foreground">Contract history and details ({contracts.length} total)</p>
         
         <div className="flex gap-4">
           <div className="relative flex-1 max-w-sm">
@@ -215,55 +190,35 @@ const ContractDetails = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Contract ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Region</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
+                <TableHead>Filename</TableHead>
+                <TableHead>Last Modified</TableHead>
                 <TableHead>Action</TableHead>
-                <TableHead>View</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredContracts.length === 0 ? (
+              {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={3} className="text-center py-4">
+                    Loading contracts...
+                  </TableCell>
+                </TableRow>
+              ) : filteredContracts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center py-8">
                     No contracts found for {decodedContractName}
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredContracts.map((contract, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{contract.id}</TableCell>
-                    <TableCell>{contract.name}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-black text-white">
-                        {contract.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{contract.region}</TableCell>
-                    <TableCell>{getStatusBadge(contract.status)}</TableCell>
-                    <TableCell>{contract.startDate}</TableCell>
-                    <TableCell>{contract.endDate}</TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="gap-2"
-                        onClick={() => alert(`Process contract ${contract.id}`)}
-                      >
-                        <Eye className="h-4 w-4" />
-                        {contract.status === "In Progress" ? "Process" : "View"}
-                      </Button>
-                    </TableCell>
+                  <TableRow key={contract.key}>
+                    <TableCell className="font-medium">{contract.filename}</TableCell>
+                    <TableCell>{new Date(contract.last_modified).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Button 
                         variant="outline" 
                         size="sm" 
                         className="gap-2"
-                        onClick={() => handleViewContract(contract.id)}
+                        onClick={() => handleViewContract(contract)}
                       >
                         <Eye className="h-4 w-4" />
                         View
