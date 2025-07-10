@@ -57,24 +57,6 @@ const ContractView = () => {
     setContractJsonData(JSON.stringify(jsonData, null, 2));
   }, [contract, decodedContractName]);
 
-  const [blobUrl, setBlobUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPDF = async () => {
-      try {
-        const response = await fetch(pdfUrl, { mode: "cors" });
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setBlobUrl(url);
-      } catch (error) {
-        console.error("Blob fetch error:", error);
-      }
-    };
-  
-    if (pdfUrl) fetchPDF();
-  }, [pdfUrl]);
-
-
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
   };
