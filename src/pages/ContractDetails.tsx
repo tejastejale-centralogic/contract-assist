@@ -1,13 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom";
-import { Search, Filter, Upload, X, FileText, ArrowLeft, Eye } from "lucide-react";
+import {
+  useParams,
+  useSearchParams,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+import {
+  Search,
+  Filter,
+  Upload,
+  X,
+  FileText,
+  ArrowLeft,
+  Eye,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import loadingGif from "@/assets/loading.gif";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { contractApi, ContractFile } from "@/services/contractApi";
 import { useToast } from "@/hooks/use-toast";
@@ -25,12 +57,13 @@ const ContractDetails = () => {
   const [loading, setLoading] = useState(true);
 
   const decodedContractName = decodeURIComponent(contractName || "");
-  const uri = searchParams.get('uri') || '';
+  const uri = searchParams.get("uri") || "";
 
   useEffect(() => {
     const fetchContracts = async () => {
-      if (!uri) return;
-      
+      console.log("object");
+      // if (!uri) return;
+      console.log("2");
       try {
         setLoading(true);
         const response = await contractApi.getContractFiles(uri);
@@ -51,19 +84,24 @@ const ContractDetails = () => {
     fetchContracts();
   }, [uri, toast]);
 
-  const documentTypes = [
-    "MTF",
-    "Legacy", 
-    "PULA"
-  ];
+  const documentTypes = ["MTF", "Legacy", "PULA"];
 
-  const filteredContracts = contracts.filter(contract =>
-    contract.filename.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contract.key.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredContracts = contracts.filter(
+    (contract) =>
+      contract.filename.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      contract.key.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleViewContract = (contract: ContractFile) => {
-    navigate(`/contract/${encodeURIComponent(contractName || "")}/view/${encodeURIComponent(contract.filename)}?url=${encodeURIComponent(contract.url)}`);
+    navigate(
+      `/contract/${encodeURIComponent(
+        contractName || ""
+      )}/view/${encodeURIComponent(contract.filename)}?url=${encodeURIComponent(
+        contract.url
+      )}&uri=${encodeURIComponent(contract.uri)}&globalUri=${encodeURIComponent(
+        uri
+      )}`
+    );
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,14 +136,20 @@ const ContractDetails = () => {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{decodedContractName}</h1>
-          <p className="text-muted-foreground">Contract Details and Documents</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {decodedContractName}
+          </h1>
+          <p className="text-muted-foreground">
+            Contract Details and Documents
+          </p>
         </div>
       </div>
 
       <div className="space-y-4">
-        <p className="text-muted-foreground">Contract history and details ({contracts.length} total)</p>
-        
+        <p className="text-muted-foreground">
+          Contract history and details ({contracts.length} total)
+        </p>
+
         <div className="flex gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -120,7 +164,7 @@ const ContractDetails = () => {
             <Filter className="h-4 w-4" />
             Filter
           </Button>
-          
+
           <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
@@ -148,7 +192,7 @@ const ContractDetails = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="file">Upload PDF File</Label>
                   <Input
@@ -170,8 +214,8 @@ const ContractDetails = () => {
                   <Button onClick={handleUploadSubmit} className="flex-1">
                     Upload
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setUploadDialogOpen(false);
                       setSelectedFile(null);
@@ -199,6 +243,7 @@ const ContractDetails = () => {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center py-4">
+                    <img src={loadingGif} className="m-auto w-20 h-20" />
                     Loading contracts...
                   </TableCell>
                 </TableRow>
@@ -211,12 +256,16 @@ const ContractDetails = () => {
               ) : (
                 filteredContracts.map((contract, index) => (
                   <TableRow key={contract.key}>
-                    <TableCell className="font-medium">{contract.filename}</TableCell>
-                    <TableCell>{new Date(contract.last_modified).toLocaleDateString()}</TableCell>
+                    <TableCell className="font-medium">
+                      {contract.filename}
+                    </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      {new Date(contract.last_modified).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="gap-2"
                         onClick={() => handleViewContract(contract)}
                       >

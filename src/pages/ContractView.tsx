@@ -1,25 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import {
+  useParams,
+  useSearchParams,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import { ArrowLeft, FileText, Code, Check } from "lucide-react";
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, Page, pdfjs } from "react-pdf";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-
+import axios from "axios";
 // Set up the worker for react-pdf
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const ContractView = () => {
-  const { contractName, contractId } = useParams<{ contractName: string; contractId: string }>();
+  const { contractName, contractId } = useParams<{
+    contractName: string;
+    contractId: string;
+  }>();
   const [searchParams] = useSearchParams();
   const [contractJsonData, setContractJsonData] = useState("");
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
-  
+  const [hasSelected, setHasSelected] = useState(false);
+  const [select, setSelect] = useState("");
   const decodedContractName = decodeURIComponent(contractName || "");
   const decodedContractId = decodeURIComponent(contractId || "");
-  const pdfUrl = searchParams.get('url') || '';
+  const pdfUrl = searchParams.get("url") || "";
+  const s3Uri = searchParams.get("uri") || "";
 
   // Create contract data from URL parameters
   const contract = {
@@ -30,47 +40,44 @@ const ContractView = () => {
     status: "Available",
     startDate: "N/A",
     endDate: "N/A",
-    pdfUrl: pdfUrl
+    pdfUrl: pdfUrl,
   };
-  
 
-  // Initialize JSON data when component mounts
+  const [loadingJson, setLoadingJson] = useState(false);
+
+  // Fetch JSON from API when contract.pdfUrl or select changes
   useEffect(() => {
-    const jsonData = {
-      contractId: contract.id,
-      contractName: contract.name,
-      companyName: decodedContractName,
-      contractDetails: {
-        type: contract.type,
-        region: contract.region,
-        status: contract.status,
-        startDate: contract.startDate,
-        endDate: contract.endDate,
-        pdfUrl: contract.pdfUrl,
-        metadata: {
-          createdDate: new Date().toISOString(),
-          lastModified: new Date().toISOString(),
-          version: "1.0"
-        }
+    const fetchJsonFromApi = async () => {
+      if (!pdfUrl || !hasSelected) return; // Skip if not selected yet
+      setLoadingJson(true);
+      try {
+        const response = await axios.post(
+          "https://faccb2ea89f9.ngrok-free.app/extract-contract-from-s3",
+          {
+            s3_uri: s3Uri,
+            contract_type: select,
+          }
+        );
+        if (response.data?.success)
+          setContractJsonData(JSON.stringify(response.data.data, null, 2));
+      } catch (error) {
+        setContractJsonData("// Failed to load contract JSON");
+      } finally {
+        setLoadingJson(false);
       }
     };
-    setContractJsonData(JSON.stringify(jsonData, null, 2));
-  }, [contract, decodedContractName]);
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-  };
-
-  const goToPrevPage = () => {
-    setPageNumber(pageNumber <= 1 ? 1 : pageNumber - 1);
-  };
-
-  const goToNextPage = () => {
-    setPageNumber(pageNumber >= numPages ? numPages : pageNumber + 1);
-  };
+    fetchJsonFromApi();
+  }, [select, pdfUrl, s3Uri, hasSelected]);
 
   const handleApprove = () => {
     alert(`Contract ${decodedContractId} approved successfully!`);
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelect(value);
+    setHasSelected(true); // mark that user selected something
   };
 
   if (!pdfUrl) {
@@ -87,26 +94,31 @@ const ContractView = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="space-y-4">
-        <Link to={`/contract/${encodeURIComponent(contractName || "")}`}>
+        <Link
+          to={`/contract/${encodeURIComponent(
+            contractName || ""
+          )}?uri=${encodeURIComponent(searchParams.get("globalUri") || "")}`}
+        >
           <Button variant="outline" size="sm" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{decodedContractId}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {decodedContractId.replace(".pdf", "")}
+          </h1>
           <p className="text-muted-foreground">{decodedContractName}</p>
         </div>
       </div>
 
-      {/* Two-column layout - always side by side */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-[2fr_1fr] gap-6">
         {/* PDF Viewer Card */}
-        <Card className="h-[700px]">
+        <Card className="h-[700px] flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Contract Document
+              Document
               {numPages > 0 && (
                 <span className="text-sm text-muted-foreground ml-auto">
                   Page {pageNumber} of {numPages}
@@ -114,60 +126,76 @@ const ContractView = () => {
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-full flex flex-col">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={goToPrevPage}
-                disabled={pageNumber <= 1}
-              >
-                Previous
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={goToNextPage}
-                disabled={pageNumber >= numPages}
-              >
-                Next
-              </Button>
+          <CardContent className="flex-1 flex flex-col min-h-0">
+            <div className="flex-1 min-h-0 w-full border rounded-md overflow-hidden">
+              <iframe
+                src={contract.pdfUrl}
+                className="w-full h-full min-h-0 border-0"
+                style={{ display: "block" }}
+                title="Contract PDF"
+              />
             </div>
-            <ScrollArea className="h-[550px] w-full border rounded-md">
-              <div className="flex justify-center p-4">
-                <Document
-                  file={{url:`${contract.pdfUrl}`}}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  loading={<div className="text-center p-4">Loading PDF...</div>}
-                  error={<div className="text-center p-4 text-red-500">Failed to load PDF</div>}
-                >
-                  <Page 
-                    pageNumber={pageNumber}
-                    width={500}
-                    loading={<div className="text-center p-4">Loading page...</div>}
-                  />
-                </Document>
-              </div>
-            </ScrollArea>
           </CardContent>
         </Card>
 
         {/* JSON Viewer Card */}
         <Card className="h-[700px]">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-wrap flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Code className="h-5 w-5" />
-              Contract JSON Data
+              JSON
             </CardTitle>
-            <Button onClick={handleApprove} className="gap-2">
-              <Check className="h-4 w-4" />
-              Approve
-            </Button>
+            <div className="flex gap-2">
+              <div className="relative inline-block w-fit">
+                <select
+                  onChange={handleSelectChange}
+                  value={select}
+                  className="appearance-none w-full border border-gray-300 rounded-md h-10 pl-3 pr-10 text-sm text-gray-700 bg-white shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ease-linear"
+                  style={{
+                    WebkitAppearance: "none",
+                    MozAppearance: "none",
+                    appearance: "none",
+                  }}
+                >
+                  <option value="" disabled hidden>
+                    Select Contract Type
+                  </option>
+                  <option value="MTF">MTF</option>
+                  <option value="MTF_Legacy">Legacy</option>
+                  <option value="MTF_Pula">PULA</option>
+                </select>
+
+                {/* Custom Dropdown Icon */}
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg
+                    className="w-4 h-4 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 9l-7 7-7-7"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              {contractJsonData !== "// Failed to load contract JSON" &&
+                contractJsonData && (
+                  <Button onClick={handleApprove} className="gap-2">
+                    <Check className="h-4 w-4" />
+                    Approve
+                  </Button>
+                )}
+            </div>
           </CardHeader>
           <CardContent className="h-full">
             <ScrollArea className="h-[600px] w-full">
               <Textarea
-                value={contractJsonData}
+                value={loadingJson ? "// Loading..." : contractJsonData}
                 onChange={(e) => setContractJsonData(e.target.value)}
                 className="h-[580px] w-full text-xs font-mono resize-none border-0 focus-visible:ring-0"
                 placeholder="Edit JSON data..."

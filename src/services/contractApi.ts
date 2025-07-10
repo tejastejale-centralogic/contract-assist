@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://c72619c2f1b1.ngrok-free.app';
+const API_BASE_URL = "https://faccb2ea89f9.ngrok-free.app";
 
 export interface ContractFolder {
   name: string;
@@ -34,29 +34,32 @@ export const contractApi = {
   async getContractFolders(): Promise<FoldersResponse> {
     const response = await fetch(`${API_BASE_URL}/list-s3-folders`, {
       headers: {
-        'ngrok-skip-browser-warning': 'true'
-      }
+        "ngrok-skip-browser-warning": "true",
+      },
     });
-    
+
     if (!response.ok) {
-      throw new Error('Failed to fetch contract folders');
+      throw new Error("Failed to fetch contract folders");
     }
-    
+
     return response.json();
   },
 
   async getContractFiles(uri: string): Promise<ContractsResponse> {
     const encodedUri = encodeURIComponent(uri);
-    const response = await fetch(`${API_BASE_URL}/list-s3-files?uri=${encodedUri}`, {
-      headers: {
-        'ngrok-skip-browser-warning': 'true'
+    const response = await fetch(
+      `${API_BASE_URL}/list-s3-files?uri=${encodedUri}`,
+      {
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
       }
-    });
-    
+    );
+
     if (!response.ok) {
-      throw new Error('Failed to fetch contract files');
+      throw new Error("Failed to fetch contract files");
     }
-    
+
     return response.json();
-  }
+  },
 };
