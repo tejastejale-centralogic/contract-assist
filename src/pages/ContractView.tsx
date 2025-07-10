@@ -32,24 +32,7 @@ const ContractView = () => {
     endDate: "N/A",
     pdfUrl: pdfUrl
   };
-
-  const [blobUrl, setBlobUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPDF = async () => {
-      try {
-        const response = await fetch(pdfUrl, { mode: "cors" });
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setBlobUrl(url);
-      } catch (error) {
-        console.error("Blob fetch error:", error);
-      }
-    };
   
-    if (pdfUrl) fetchPDF();
-  }, [pdfUrl]);
-
 
   // Initialize JSON data when component mounts
   useEffect(() => {
@@ -152,18 +135,18 @@ const ContractView = () => {
             </div>
             <ScrollArea className="h-[550px] w-full border rounded-md">
               <div className="flex justify-center p-4">
-                <Document
-                  file={blobUrl}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  loading={<div className="text-center p-4">Loading PDF...</div>}
-                  error={<div className="text-center p-4 text-red-500">Failed to load PDF</div>}
-                >
-                  <Page 
-                    pageNumber={pageNumber}
-                    width={500}
-                    loading={<div className="text-center p-4">Loading page...</div>}
-                  />
-                </Document>
+                 <Document
+    file={blobUrl}
+    onLoadSuccess={onDocumentLoadSuccess}
+    loading={<div className="text-center p-4">Loading PDF...</div>}
+    error={<div className="text-center p-4 text-red-500">Failed to load PDF</div>}
+  >
+    <Page 
+      pageNumber={pageNumber}
+      width={500}
+      loading={<div className="text-center p-4">Loading page...</div>}
+    />
+  </Document>
               </div>
             </ScrollArea>
           </CardContent>
