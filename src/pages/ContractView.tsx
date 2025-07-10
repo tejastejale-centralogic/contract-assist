@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, FileText, Code, Check } from "lucide-react";
+import { Document, Page, pdfjs } from 'react-pdf';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 
+// Set up the worker for react-pdf
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
 const ContractView = () => {
   const { contractName, contractId } = useParams<{ contractName: string; contractId: string }>();
   const [searchParams] = useSearchParams();
   const [contractJsonData, setContractJsonData] = useState("");
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
   
   const decodedContractName = decodeURIComponent(contractName || "");
   const decodedContractId = decodeURIComponent(contractId || "");
@@ -51,6 +57,18 @@ const ContractView = () => {
     setContractJsonData(JSON.stringify(jsonData, null, 2));
   }, [contract, decodedContractName]);
 
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
+
+  const goToPrevPage = () => {
+    setPageNumber(pageNumber <= 1 ? 1 : pageNumber - 1);
+  };
+
+  const goToNextPage = () => {
+    setPageNumber(pageNumber >= numPages ? numPages : pageNumber + 1);
+  };
+
   const handleApprove = () => {
     alert(`Contract ${decodedContractId} approved successfully!`);
   };
@@ -89,16 +107,46 @@ const ContractView = () => {
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
               Contract Document
+              {numPages > 0 && (
+                <span className="text-sm text-muted-foreground ml-auto">
+                  Page {pageNumber} of {numPages}
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-full">
-            <ScrollArea className="h-[600px] w-full border rounded-md">
-              <div className="w-full h-full">
-                <iframe
-                  src={contract.pdfUrl}
-                  className="w-full h-[580px] border-0"
-                  title="Contract PDF"
-                />
+          <CardContent className="h-full flex flex-col">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={goToPrevPage}
+                disabled={pageNumber <= 1}
+              >
+                Previous
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={goToNextPage}
+                disabled={pageNumber >= numPages}
+              >
+                Next
+              </Button>
+            </div>
+            <ScrollArea className="h-[550px] w-full border rounded-md">
+              <div className="flex justify-center p-4">
+                <Document
+                  file={contract.pdfUrl}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  loading={<div className="text-center p-4">Loading PDF...</div>}
+                  error={<div className="text-center p-4 text-red-500">Failed to load PDF</div>}
+                >
+                  <Page 
+                    pageNumber={pageNumber}
+                    width={500}
+                    loading={<div className="text-center p-4">Loading page...</div>}
+                  />
+                </Document>
               </div>
             </ScrollArea>
           </CardContent>
