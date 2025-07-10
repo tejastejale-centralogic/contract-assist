@@ -27,6 +27,8 @@ const ContractView = () => {
     pdfUrl: pdfUrl
   };
 
+  console.log(contract.pdfUrl)
+
   // Initialize JSON data when component mounts
   useEffect(() => {
     const jsonData = {
