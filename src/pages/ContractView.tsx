@@ -93,6 +93,7 @@ const ContractView = () => {
           <CardContent className="h-full">
             <ScrollArea className="h-[600px] w-full border rounded-md">
               <div className="w-full h-full">
+                {console.log(JSON.stringfy(contract.pdfUrl))}
                 <iframe
                   src={contract.pdfUrl}
                   className="w-full h-[580px] border-0"
