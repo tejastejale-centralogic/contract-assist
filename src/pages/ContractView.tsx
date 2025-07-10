@@ -139,7 +139,7 @@ const ContractView = () => {
                   file={contract.pdfUrl}
                   onLoadSuccess={onDocumentLoadSuccess}
                   loading={<div className="text-center p-4">Loading PDF...</div>}
-                  error={<div className="text-center p-4 text-red-500">Failed to load PDF</div>}
+                  error={e=>(<div className="text-center p-4 text-red-500"> {console.log(e)} Failed to load PDF</div>)}
                 >
                   <Page 
                     pageNumber={pageNumber}
