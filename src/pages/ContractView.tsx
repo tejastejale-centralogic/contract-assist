@@ -27,7 +27,22 @@ const ContractView = () => {
     pdfUrl: pdfUrl
   };
 
-  console.log(contract.pdfUrl)
+  function BlobViewer({ pdfUrl }) {
+  const [blobUrl, setBlobUrl] = useState(null);
+
+  useEffect(() => {
+    fetch(pdfUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        setBlobUrl(url);
+      });
+  }, [pdfUrl]);
+
+  if (!blobUrl) return <p>Loading...</p>;
+
+  return <iframe src={blobUrl} width="100%" height="600px" />;
+}
 
   // Initialize JSON data when component mounts
   useEffect(() => {
@@ -95,11 +110,12 @@ const ContractView = () => {
           <CardContent className="h-full">
             <ScrollArea className="h-[600px] w-full border rounded-md">
               <div className="w-full h-full">
-                <iframe
+                {BlobViewer(contract.pdfUrl)}
+                {/* <iframe
                   src={contract.pdfUrl}
                   className="w-full h-[580px] border-0"
                   title="Contract PDF"
-                />
+                /> */}
               </div>
             </ScrollArea>
           </CardContent>
