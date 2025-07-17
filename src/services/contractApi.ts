@@ -1,5 +1,5 @@
-// const API_BASE_URL = "https://51a3e11d13f2.ngrok-free.app";
-const API_BASE_URL = "https://dev-monotype-contract-ai.huhoka.com";
+import axios from "axios";
+import { getFiles, getJson, listFolders } from "./constant";
 
 export interface ContractFolder {
   name: string;
@@ -31,9 +31,17 @@ export interface ContractsResponse {
   timestamp: string;
 }
 
+export const getContractJson = async (s3Uri: string, select: string) => {
+  const res = await axios.post(`${getJson}`, {
+    s3_uri: s3Uri,
+    contract_type: select,
+  });
+  return res;
+};
+
 export const contractApi = {
   async getContractFolders(): Promise<FoldersResponse> {
-    const response = await fetch(`${API_BASE_URL}/list-s3-folders`, {
+    const response = await fetch(`${listFolders}`, {
       // headers: {
       //   "ngrok-skip-browser-warning": "true",
       // },
@@ -49,7 +57,7 @@ export const contractApi = {
   async getContractFiles(uri: string): Promise<ContractsResponse> {
     const encodedUri = encodeURIComponent(uri);
     const response = await fetch(
-      `${API_BASE_URL}/list-s3-files?uri=${encodedUri}`
+      `${getFiles}?uri=${encodedUri}`
       // {
       //   headers: {
       //     "ngrok-skip-browser-warning": "true",
