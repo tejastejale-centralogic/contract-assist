@@ -1,4 +1,5 @@
-const API_BASE_URL = "https://51a3e11d13f2.ngrok-free.app";
+// const API_BASE_URL = "https://51a3e11d13f2.ngrok-free.app";
+const API_BASE_URL = "https://dev-monotype-contract-ai.huhoka.com";
 
 export interface ContractFolder {
   name: string;
@@ -33,9 +34,9 @@ export interface ContractsResponse {
 export const contractApi = {
   async getContractFolders(): Promise<FoldersResponse> {
     const response = await fetch(`${API_BASE_URL}/list-s3-folders`, {
-      headers: {
-        "ngrok-skip-browser-warning": "true",
-      },
+      // headers: {
+      //   "ngrok-skip-browser-warning": "true",
+      // },
     });
 
     if (!response.ok) {
@@ -48,12 +49,12 @@ export const contractApi = {
   async getContractFiles(uri: string): Promise<ContractsResponse> {
     const encodedUri = encodeURIComponent(uri);
     const response = await fetch(
-      `${API_BASE_URL}/list-s3-files?uri=${encodedUri}`,
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
-      }
+      `${API_BASE_URL}/list-s3-files?uri=${encodedUri}`
+      // {
+      //   headers: {
+      //     "ngrok-skip-browser-warning": "true",
+      //   },
+      // }
     );
 
     if (!response.ok) {
